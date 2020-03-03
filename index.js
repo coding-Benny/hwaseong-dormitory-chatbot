@@ -1,4 +1,3 @@
-/** app 생성 */
 const express = require('express');
 const app = express();
 const logger = require('morgan');
@@ -14,15 +13,19 @@ app.use(bodyParser.urlencoded({
 
 app.use('/api', apiRouter);
 
-/** 라우팅 담당 미들웨어 함수 생성 */
-apiRouter.post('/diet', function(req, res) {
+apiRouter.post('/sunday', function(req, res) {
+  var userInputDay = req.body.action.detailParams.sys_date.origin;
+  var dateInfo = req.body.action.params.sys_date;
+  var dateObj = JSON.parse(dateInfo);
+  var date = dateObj.date;
+  var textValue = `${userInputDay}(${date})`;
   const responseBody = {
     version: "2.0",
     template: {
       outputs: [
         {
           simpleText: {
-            text: "today's meal"
+            text: textValue
           }
         }
       ]
@@ -35,4 +38,4 @@ apiRouter.post('/diet', function(req, res) {
 app.listen(3000, function() {
   console.log('Example skill server listening on port 3000!');
 });
-
+   
