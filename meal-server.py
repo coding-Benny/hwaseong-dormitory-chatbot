@@ -1,65 +1,102 @@
 import json
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, render_template, request, jsonify
+import datetime
+from datetime import date
+from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 @app.route("/meal", methods=['POST'])
-
-def getDateInfo():
-    req = request.get_json()
-    userInputDay = req["action"]["detailParams"]["sys_date"]["origin"]
-    requestedDateInfo = req["action"]["params"]["sys_date"]
+def main():
+    f = open("meal.txt", 'w')
+    req = request.get_json() # 요청 내용 가져오기
+    userInput = req["action"]["detailParams"]["sys_date"]["origin"] # 사용자 입력 내용
+    requestedDateInfo = req["action"]["params"]["sys_date"] # 요일에 따른 날짜 정보
     requestedDateObj = json.loads(requestedDateInfo)
     requestedDate = requestedDateObj.get("date")
     requestedDateList = requestedDate.split("-")
     year = requestedDateList[0]
     month = requestedDateList[1]
     date = requestedDateList[2]
-    dateMessage = userInputDay + "(" + requestedDate + ")"
+    requestedDay = datetime.date(int(year), int(month), int(date))
+    requestedDay = requestedDay.strftime("%A") # 날짜에 따른 요일 정보
+    dayDict = {"Sunday": "일요일", "Monday": "월요일", "Tuesday": "화요일", "Wednesday": "수요일", "Thursday": "목요일", "Friday": "금요일", "Saturday": "토요일"}
+    requestedDayKor = dayDict.get(requestedDay)
+    dateMessage = requestedDayKor + "(" + requestedDate + ")" # 일요일(2020-03-08)
 
     mealInfoURL = requests.get('http://www.hstree.org/admin_hs/main/z1_food1.php?gmglory=1&page_no=34&years=' + year + '&months=' + month + '&days=' + date)
     soup = BeautifulSoup(mealInfoURL.content, 'html.parser')
     diets = soup.select("td")
-    dobong = 1
 
-    breakfast = diets[switch(userInputDay)].get_text()
-    lunch = diets[switch(userInputDay)+7].get_text()
-    dinner = diets[switch(userInputDay)+14].get_text()
-    breakfast_list = breakfast.split("2관")
-    lunch_list = lunch.split("2관")
-    dinner_list = dinner.split("2관")
-    if breakfast_list[dobong] == '':
-        breakfast_list[dobong] = "식단 정보가 없습니다."
-    if lunch_list[dobong] == '':
-        lunch_list[dobong] = "식단 정보가 없습니다."
-    if dinner_list[dobong] == '':
-        dinner_list[dobong] = "식단 정보가 없습니다."
+    dobong = 1 # 도봉나래관
+    errorMessage = "등록된 식단 정보가 없습니다."
 
-    meal = {
+    try:
+        meal = { # 일주일치 식단 정보
+            "Sunday": {
+                "breakfast": diets[1].get_text().split("2관")[dobong],
+                "lunch": diets[8].get_text().split("2관")[dobong],
+                "dinner": diets[15].get_text().split("2관")[dobong],
+            },
+            "Monday": {
+                "breakfast": diets[2].get_text().split("2관")[dobong],
+                "lunch": diets[9].get_text().split("2관")[dobong],
+                "dinner": diets[16].get_text().split("2관")[dobong],
+            },
+            "Tuesday": {
+                "breakfast": diets[3].get_text().split("2관")[dobong],
+                "lunch": diets[10].get_text().split("2관")[dobong],
+                "dinner": diets[17].get_text().split("2관")[dobong],
+            },
+            "Wednesday": {
+                "breakfast": diets[4].get_text().split("2관")[dobong],
+                "lunch": diets[11].get_text().split("2관")[dobong],
+                "dinner": diets[18].get_text().split("2관")[dobong],
+            },
+            "Thursday": {
+                "breakfast": diets[5].get_text().split("2관")[dobong],
+                "lunch": diets[12].get_text().split("2관")[dobong],
+                "dinner": diets[19].get_text().split("2관")[dobong],
+            },
+            "Friday": {
+                "breakfast": diets[6].get_text().split("2관")[dobong],
+                "lunch": diets[13].get_text().split("2관")[dobong],
+                "dinner": diets[20].get_text().split("2관")[dobong],
+            },
+            "Saturday": {
+                "breakfast": diets[7].get_text().split("2관")[dobong],
+                "lunch": diets[14].get_text().split("2관")[dobong],
+                "dinner": diets[21].get_text().split("2관")[dobong],
+            }
+        }
+        if meal[requestedDay]["breakfast"] == "":
+            meal[requestedDay]["breakfast"] = errorMessage
+        if meal[requestedDay]["lunch"] == "":
+            meal[requestedDay]["lunch"] = errorMessage
+        if meal[requestedDay]["dinner"] == "":
+            meal[requestedDay]["dinner"] = errorMessage
+    except:
+        print("인덱스 초과!!")
+
+    mealStr = json.dumps(meal, ensure_ascii=False, indent=4)
+    f.write(mealStr)
+    f.close()
+
+    mealMessage = "\n====== 아침 ======\n" + meal[requestedDay]["breakfast"] + "\n====== 점심 ======\n" + meal[requestedDay]["lunch"] + "\n====== 저녁 ======\n" + meal[requestedDay]["dinner"]
+
+    response = {
             "version": "2.0",
             "template": {
                 "outputs": [
                     {
                         "simpleText": {
-                            "text": userInputDay + "(" + requestedDate + ")" + "\n====== 아침 ======\n" + breakfast_list[dobong] + "\n====== 점심 ======\n" + lunch_list[dobong] + "\n====== 저녁 ======\n" + dinner_list[dobong]
+                            "text": dateMessage + mealMessage
                         }
                     }
                 ]
             }
-        }
-    return jsonify(meal)
-
-def switch(userInputDay):
-    return {
-        "일요일": 1,
-        "월요일": 2,
-        "화요일": 3,
-        "수요일": 4,
-        "목요일": 5,
-        "금요일": 6,
-        "토요일": 7
-    }.get(userInputDay, -1)
+         }
+    return jsonify(response)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3000)
