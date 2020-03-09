@@ -1,57 +1,51 @@
 import json
 import requests
 from bs4 import BeautifulSoup
-import datetime
-from datetime import date
-from flask import request
+from datetime import datetime, timedelta
+import logging
+import os
+from pytz import timezone
 
-class Main:
-    def main(self):
-        req = request.get_json() # 요청 내용 가져오기
-        userInput = req["action"]["detailParams"]["sys_date"]["origin"] # 사용자 입력 내용
-        requestedDateInfo = req["action"]["params"]["sys_date"] # 요일에 따른 날짜 정보
-        requestedDateObj = json.loads(requestedDateInfo)
-        requestedDate = requestedDateObj.get("date")
-        requestedDateList = requestedDate.split("-")
-        year = requestedDateList[0]
-        month = requestedDateList[1]
-        date = requestedDateList[2]
-        requestedDay = datetime.date(int(year), int(month), int(date))
-        requestedDay = requestedDay.strftime("%A") # 날짜에 따른 요일 정보(영어)
+_abs_path = os.path.abspath(os.path.dirname(__file__))
+logging.basicConfig(filename=f'{_abs_path}/meal.log', format='[%(levelname)s] %(asctime)s | %(message)s', level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S')
+logging.debug('Meal Started')
 
-        dayDict = {"Sunday": "일요일", "Monday": "월요일", "Tuesday": "화요일", "Wednesday": "수요일", "Thursday": "목요일", "Friday": "금요일", "Saturday": "토요일"}
-        requestedDayKor = dayDict.get(requestedDay) # 날짜에 따른 요일 정보(한글)
+def save_data():
+    fmt = "%Y-%m-%d"
+    kst = datetime.now(timezone('Asia/Seoul'))
+    weekdays = [None]*7
+    year = kst.strftime("%Y")
+    month = kst.strftime("%m")
+    date = kst.strftime("%d")
+    meal_info_url = requests.get('http://www.hstree.org/admin_hs/main/z1_food1.php?gmglory=1&page_no=34&years=' + year + '&months=' + month + '&days=' + date)
+    soup = BeautifulSoup(meal_info_url.content, 'html.parser')
+    diets = soup.select("td")
+    dobong = 1 # 도봉나래관
+    error_message = "등록된 식단 정보가 없습니다."
 
-        dateMessage = requestedDayKor + "(" + requestedDate + ")" # 일요일(2020-03-08)
-
-        f = open('%s.txt' % requestedDate, 'w')
-
-        mealInfoURL = requests.get('http://www.hstree.org/admin_hs/main/z1_food1.php?gmglory=1&page_no=34&years=' + year + '&months=' + month + '&days=' + date)
-        soup = BeautifulSoup(mealInfoURL.content, 'html.parser')
-        diets = soup.select("td")
-
-        dobong = 1 # 도봉나래관
-        errorMessage = "등록된 식단 정보가 없습니다."
-
+    for i in range(0, 7):
+        weekdays[i] = kst + timedelta(days=i)
+        requested_day = weekdays[i].strftime("%A")
+        f = open('/home/ec2-user/api/database/%s.txt' % weekdays[i].strftime(fmt), 'w')
+        print(weekdays[i].strftime(fmt))
         meal = {
-            "breakfast": diets[switch(requestedDay)].get_text().split("2관")[dobong],
-            "lunch": diets[switch(requestedDay)+7].get_text().split("2관")[dobong],
-            "dinner": diets[switch(requestedDay)+14].get_text().split("2관")[dobong]
+            "breakfast": diets[switch(requested_day)].get_text().split("2관")[dobong],
+            "lunch": diets[switch(requested_day)+7].get_text().split("2관")[dobong],
+            "dinner": diets[switch(requested_day)+14].get_text().split("2관")[dobong]
         }
 
         if meal["breakfast"] == "":
-            meal["breakfast"] = errorMessage
+            meal["breakfast"] = error_message
         if meal["lunch"] == "":
-            meal["lunch"] = errorMessage
+            meal["lunch"] = error_message
         if meal["dinner"] == "":
-            meal["dinner"] = errorMessage
+            meal["dinner"] = error_message
 
-        mealStr = json.dumps(meal, ensure_ascii=False, indent=4)
-        f.write(mealStr)
+        meal_str = json.dumps(meal, ensure_ascii=False, indent=4)
+        f.write(meal_str)
         f.close()
-        return requestedDate
 
-def switch(requestedDay):
+def switch(requested_day):
     return {
         "Sunday": 1,
         "Monday": 2,
@@ -60,8 +54,8 @@ def switch(requestedDay):
         "Thursday": 5,
         "Friday": 6,
         "Saturday": 7
-    }.get(requestedDay, -1)
+    }.get(requested_day, -1)
 
 if __name__ == "__main__":
-    main()
+    save_data()
 
