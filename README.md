@@ -16,9 +16,9 @@
 
 - 도움말
 
-  <img src="C:\Users\benny\Desktop\manual.jpg" width="350" height="500">
+  <img src=".\images\manual.jpg" width="350" height="500">
 
-- 식단표🍽
+- 🍽 식단표
 
   - cronjob을 사용해 매주 일요일 0시 0분에 해당 주차 식단을 크롤링하여 텍스트 파일로 저장
   - 식단 정보 요청시 해당하는 날짜의 식단 정보를 파일에서 읽어와 응답
@@ -27,35 +27,35 @@
   >
   > 또한 현재(2020.05.10) 사이트 통합에 따라 식단표 페이지가 사라져 정상 작동되지 않습니다
 
-  <img src="C:\Users\benny\Desktop\mealInfo_1.jpg" width="350" height="1000">
+  <img src=".\images\mealInfo_1.jpg" width="350" height="1000">
 
-  <img src="C:\Users\benny\Desktop\mealInfo_2.jpg" width="350" height="500">
+  <img src=".\images\mealInfo_2.jpg" width="350" height="500">
 
-  <img src="C:\Users\benny\Desktop\wrongDateResponse.jpg" width="350" height="150">
+  <img src=".\images\wrongDateResponse.jpg" width="350" height="150">
 
-- 장학관 반경 500m 내 공적 마스크 판매처 및 재고 현황😷
-
-  - open API 사용
-
-  <img src="C:\Users\benny\Desktop\maskInfo.jpg" width="350" height="600">
-
-- 우이1교앞(10-017, 10-018) 버스 도착 정보🚌
+- 😷 장학관 반경 500m 내 공적 마스크 판매처 및 재고 현황
 
   - open API 사용
 
-  <img src="C:\Users\benny\Desktop\busInfo1.jpg" width="350" height="150">
+  <img src=".\images\maskInfo.jpg" width="350" height="600">
 
-  <img src="C:\Users\benny\Desktop\busInfo2.jpg" width="350" height="500">
+- 🚌 우이1교앞(10-017, 10-018) 버스 도착 정보
 
-- 쌍문역 지하철 도착 정보(예정) 🚉
+  - open API 사용
 
-- 날씨 & 미세먼지 정보(예정) 🌦
+  <img src=".\images\busInfo1.jpg" width="350" height="150">
 
-- 상벌점 조회(예정) 🔍
+  <img src=".\images\busInfo2.jpg" width="350" height="500">
+
+- 🚉 쌍문역 지하철 도착 정보(예정)
+
+- 🌦 날씨 & 미세먼지 정보(예정) 
+
+- 🔍 상벌점 조회(예정) 
 
   > 사이트 통합에 따라 상벌점 조회 페이지가 사라져 개발 진행에 어려움이 있습니다
 
-- 주요 일정(예정) 📅
+- 📅 주요 일정(예정) 
 
   > 사이트 통합에 따라 주요 일정 페이지가 사라져 개발 진행에 어려움이 있습니다
 
