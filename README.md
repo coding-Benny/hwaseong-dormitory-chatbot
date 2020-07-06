@@ -27,11 +27,11 @@
   >
   > 또한 현재(2020.05.10) 사이트 통합에 따라 식단표 페이지가 사라져 정상 작동되지 않습니다
 
-  <img src=".\images\mealInfo_1.jpg" width="350" height="1000">
+  <img src=".\images\mealInfo_1.jpg" width="300" height="800">
 
-  <img src=".\images\mealInfo_2.jpg" width="350" height="500">
+  <img src=".\images\mealInfo_2.jpg" width="300" height="400">
 
-  <img src=".\images\wrongDateResponse.jpg" width="350" height="150">
+  <img src=".\images\wrongDateResponse.jpg" width="300" height="100">
 
 - 😷 장학관 반경 500m 내 공적 마스크 판매처 및 재고 현황
 
@@ -43,7 +43,7 @@
 
   - open API 사용
 
-  <img src=".\images\busInfo1.jpg" width="350" height="150">
+  <img src=".\images\busInfo1.jpg" width="350" height="150"><br>
 
   <img src=".\images\busInfo2.jpg" width="350" height="500">
 
