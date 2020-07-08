@@ -5,13 +5,9 @@ app = Flask(__name__)
 
 @app.route("/mask", methods=['POST'])
 def mask():
-    mask_open_api = 'https://8oi9s0nnth.apigw.ntruss.com/corona19-masks/v1/storesByGeo/json?'
-    latitude = 'lat=37.6445243&'
-    longitude = 'lng=127.034310&'
-    meter = 'm=500'
-
-    res = requests.get(mask_open_api + latitude + longitude + meter)
-
+    payload = {'lat': '37.6445243', 'lng':'127.034310', 'm': '500'}
+    res = requests.get('https://8oi9s0nnth.apigw.ntruss.com/corona19-masks/v1/storesByGeo/json?', params=payload)
+    
     status_dict = {'break': "🖤", 'empty': "🖤", 'few': "❤", 'some': "💛", 'plenty': "💚"}
 
     mask_vendors = []
@@ -50,7 +46,7 @@ def mask():
     mask_response = {
             "version": "2.0",
             "template": {
-            "outputs": [
+                "outputs": [
                     {
                         "carousel": {
                             "type": "basicCard",
@@ -88,11 +84,11 @@ def mask():
                 ],
             "quickReplies": [
                 {
-                    "action": "message",
-                    "label": "도움말",
+                    "action": "message", 
+                    "label": "도움말", 
                     "messageText": "도움말"
                 },
-                {
+                { 
                     "action": "message",
                     "label": "간식이 먹고 싶어요🍪",
                     "messageText": "간식?"
