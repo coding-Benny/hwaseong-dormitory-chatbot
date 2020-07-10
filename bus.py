@@ -164,30 +164,50 @@ def get_bus_info():
         is_last1 = soup.find('islast1').get_text()
         is_last2 = soup.find('islast2').get_text()
 
-        #if arrive_info1 == "곧 도착":
-        #    arrive_soon.append(bus_number)
-
         if arrive_info1 != "곧 도착" and arrive_info1 != "운행종료" and arrive_info1 != "출발대기":
-            temp = re.findall(r'\d+', arrive_info1)
-            arrive_info1_list = list(map(str, temp))
-            minute = arrive_info1_list[0]
-            second = arrive_info1_list[1]
-            remain_stops = arrive_info1_list[2]
-            if is_last1 == '1':
-                arrive_info1 = "[막차🚨] " + minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info1) + ")"
-            else:
-                arrive_info1 = minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info1) + ")"
+            try:
+                temp = re.findall(r'\d+', arrive_info1)
+                arrive_info1_list = list(map(str, temp))
+                minute = arrive_info1_list[0]
+                second = arrive_info1_list[1]
+                remain_stops = arrive_info1_list[2]
+                if is_last1 == '1':
+                    arrive_info1 = "[막차🚨] " + minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info1) + ")"
+                else:
+                    arrive_info1 = minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info1) + ")"
+            except IndexError:
+                arrive_info1_list.append('null')
+                arrive_info1_list[2] = arrive_info1_list[1]
+                arrive_info1_list[1] = "00"
+                second = arrive_info1_list[1]
+                remain_stops = arrive_info1_list[2]
+                if is_last1 == '1':
+                    arrive_info1 = "[막차🚨] " + minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info1) + ")"
+                else:
+                    arrive_info1 = minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info1) + ")"
 
         if arrive_info2 != "곧 도착" and arrive_info2 != "운행종료" and arrive_info2 != "출발대기":
-            temp = re.findall(r'\d+', arrive_info2)
-            arrive_info2_list = list(map(str, temp))
-            minute = arrive_info2_list[0]
-            second = arrive_info2_list[1]
-            remain_stops = arrive_info2_list[2]
-            if is_last2 == '1':
-                arrive_info2 = "[막차🚨] " + minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info2) + ")\n"
-            else:
-                arrive_info2 = minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info2) + ")"
+            try:
+                temp = re.findall(r'\d+', arrive_info2)
+                arrive_info2_list = list(map(str, temp))
+                minute = arrive_info2_list[0]
+                second = arrive_info2_list[1]
+                remain_stops = arrive_info2_list[2]
+                if is_last2 == '1':
+                    arrive_info2 = "[막차🚨] " + minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info2) + ")\n"
+                else:
+                    arrive_info2 = minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info2) + ")"
+            except IndexError:
+                arrive_info2_list.append('null')
+                arrive_info2_list[2] = arrive_info2_list[1]
+                arrive_info2_list[1] = "00"
+                second = arrive_info2_list[1]
+                remain_stops = arrive_info2_list[2]
+                if is_last2 == '1':
+                    arrive_info2 = "[막차🚨] " + minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info2) + ")\n"
+                else:
+                    arrive_info2 = minute + "분 " + second + "초(" + remain_stops + "정류장, " + congestion.get(congestion_info2) + ")"
+
 
         bus_info_message = "🚌 " + bus_number + "(" + direction + " 방면)\n"
         arrive_info_message = "- " + arrive_info1 + "\n- " + arrive_info2 + "\n"
